@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:quiz_app/data/questions_list.dart';
 import 'package:quiz_app/screens/quiz.dart';
 import 'package:quiz_app/screens/result.dart';
@@ -135,6 +134,8 @@ class _QuizAppState extends State<QuizApp> {
                         _answerSelected = true;
                       });
                     },
+                    correctAnswerIndex: _questions[_questionIndex]['answers']
+                        .indexWhere((answer) => answer['score'] == 100),
                   ),
                   const SizedBox(
                     height: 20,

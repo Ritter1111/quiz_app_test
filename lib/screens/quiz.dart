@@ -6,6 +6,7 @@ class Quiz extends StatelessWidget {
   final Function(int) answerQuestion;
   final VoidCallback? onAnswerSelected;
   final int? selectedAnswerIndex;
+  final int correctAnswerIndex;
 
   const Quiz({
     super.key,
@@ -14,6 +15,7 @@ class Quiz extends StatelessWidget {
     required this.answerQuestion,
     this.onAnswerSelected,
     this.selectedAnswerIndex,
+    required this.correctAnswerIndex,
   });
 
   @override
@@ -37,24 +39,34 @@ class Quiz extends StatelessWidget {
         ...((questions[questionIndex]['answers'] as List<Map<String, Object>>)
             .asMap()
             .map((index, answer) {
+          bool isCorrectAnswer =
+              index == correctAnswerIndex && answer['score'] == 100;
+          bool isWrongAnswer =
+              index == selectedAnswerIndex && answer['score'] == 0;
+          bool isAnswerSelected = selectedAnswerIndex != null;
+
+          Color? backgroundColor;
+          if (isCorrectAnswer && isAnswerSelected) {
+            backgroundColor = Colors.green.withOpacity(0.5);
+          } else if (isWrongAnswer) {
+            backgroundColor = Colors.red.withOpacity(0.5);
+          } else {
+            backgroundColor = Colors.white;
+          }
+
           return MapEntry(
             index,
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: TextButton(
                 onPressed: () {
-                  answerQuestion(
-                    index,
-                  );
+                  if (!isAnswerSelected) {
+                    answerQuestion(index);
+                  }
                 },
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(
-                      const Size(double.infinity, 50)),
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    index == selectedAnswerIndex
-                        ? const Color.fromARGB(255, 217, 250, 218)
-                        : Colors.white,
-                  ),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(backgroundColor),
                   foregroundColor:
                       MaterialStateProperty.all<Color>(Colors.black),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
