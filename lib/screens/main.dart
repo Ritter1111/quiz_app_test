@@ -14,21 +14,33 @@ class _QuizAppState extends State<QuizApp> {
   int _questionIndex = 0;
   int _totalScore = 0;
   bool _answerSelected = false;
+  int? _selectedAnswerIndex;
 
   final List<Map<String, dynamic>> _questions = QuizData.questions;
 
-  void _answerQuestion(int score) {
+  void _answerQuestion(int index) {
     setState(() {
-      _totalScore += score;
       _answerSelected = true;
+      _selectedAnswerIndex = index;
     });
   }
 
   void goToNextQuestion() {
-    setState(() {
-      _questionIndex++;
-      _answerSelected = false;
-    });
+    if (_answerSelected) {
+      setState(() {
+        _totalScore += _questions[_questionIndex]['answers']
+            [_selectedAnswerIndex!]['score'] as int;
+        _questionIndex++;
+        _answerSelected = false;
+        _selectedAnswerIndex = null;
+      });
+    } else {
+      setState(() {
+        _questionIndex++;
+        _answerSelected = false;
+        _selectedAnswerIndex = null;
+      });
+    }
   }
 
   @override
@@ -62,6 +74,7 @@ class _QuizAppState extends State<QuizApp> {
                     questionIndex: _questionIndex,
                     questions: _questions,
                     answerQuestion: _answerQuestion,
+                    selectedAnswerIndex: _selectedAnswerIndex,
                     onAnswerSelected: () {
                       setState(() {
                         _answerSelected = true;
