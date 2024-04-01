@@ -71,6 +71,8 @@ class _QuizAppState extends State<QuizApp> {
         _questionIndex++;
         _answerSelected = false;
         _selectedAnswerIndex = null;
+        _timerSeconds = 60;
+        _startTimer();
       });
     }
   }
@@ -98,7 +100,10 @@ class _QuizAppState extends State<QuizApp> {
               _questionIndex < _questions.length
                   ? '00:${_timerSeconds.toString().padLeft(2, '0')}'
                   : '',
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -134,6 +139,8 @@ class _QuizAppState extends State<QuizApp> {
                   ElevatedButton(
                     onPressed: _answerSelected ? goToNextQuestion : null,
                     style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
                         backgroundColor: _answerSelected
                             ? MaterialStateProperty.all<Color>(Colors.green)
                             : MaterialStateProperty.all<Color>(
