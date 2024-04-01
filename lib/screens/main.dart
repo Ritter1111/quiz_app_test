@@ -14,7 +14,7 @@ class QuizApp extends StatefulWidget {
 
 class _QuizAppState extends State<QuizApp> {
   late Timer _timer;
-  int _timerSeconds = 60;
+  int _timerSeconds = 10;
   int _questionIndex = 0;
   int _totalScore = 0;
   bool _answerSelected = false;
@@ -63,17 +63,20 @@ class _QuizAppState extends State<QuizApp> {
         _questionIndex++;
         _answerSelected = false;
         _selectedAnswerIndex = null;
-        _timerSeconds = 60;
-        _startTimer();
+        _timerSeconds = 10;
       });
     } else {
       setState(() {
         _questionIndex++;
         _answerSelected = false;
         _selectedAnswerIndex = null;
-        _timerSeconds = 60;
-        _startTimer();
+        _timerSeconds = 10;
       });
+    }
+
+    _timer.cancel();
+    if (_questionIndex < _questions.length) {
+      _startTimer();
     }
   }
 
