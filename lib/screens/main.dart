@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:quiz_app/data/questions_list.dart';
 import 'package:quiz_app/screens/quiz.dart';
 import 'package:quiz_app/screens/result.dart';
+import 'dart:async';
 
 class QuizApp extends StatefulWidget {
   const QuizApp({super.key});
@@ -11,6 +13,8 @@ class QuizApp extends StatefulWidget {
 }
 
 class _QuizAppState extends State<QuizApp> {
+  late Timer _timer;
+  int _timerSeconds = 60;
   int _questionIndex = 0;
   int _totalScore = 0;
   bool _answerSelected = false;
@@ -18,10 +22,36 @@ class _QuizAppState extends State<QuizApp> {
 
   final List<Map<String, dynamic>> _questions = QuizData.questions;
 
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   void _answerQuestion(int index) {
     setState(() {
       _answerSelected = true;
       _selectedAnswerIndex = index;
+    });
+  }
+
+  void _startTimer() {
+    const oneSecond = Duration(seconds: 1);
+    _timer = Timer.periodic(oneSecond, (Timer timer) {
+      setState(() {
+        if (_timerSeconds > 0) {
+          _timerSeconds--;
+        } else {
+          timer.cancel();
+          goToNextQuestion();
+        }
+      });
     });
   }
 
@@ -33,6 +63,8 @@ class _QuizAppState extends State<QuizApp> {
         _questionIndex++;
         _answerSelected = false;
         _selectedAnswerIndex = null;
+        _timerSeconds = 60;
+        _startTimer();
       });
     } else {
       setState(() {
@@ -47,13 +79,28 @@ class _QuizAppState extends State<QuizApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _questionIndex < _questions.length
-              ? 'Question ${_questionIndex + 1}'
-              : '',
-          style: const TextStyle(
-            fontSize: 18,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 30.0),
+                child: Text(
+                  _questionIndex < _questions.length
+                      ? 'Question ${_questionIndex + 1}'
+                      : '',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+            Text(
+              _questionIndex < _questions.length
+                  ? '00:${_timerSeconds.toString().padLeft(2, '0')}'
+                  : '',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
         ),
         centerTitle: true,
         bottom: PreferredSize(
